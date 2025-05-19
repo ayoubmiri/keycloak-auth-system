@@ -73,7 +73,7 @@
   ],
   "clients": [
     {
-      "clientId": "ent_est-realm",
+      "clientId": "ent_est-client",
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "gZA4j6vLFk6YQcWIme7KvThJBJCPCYwC",

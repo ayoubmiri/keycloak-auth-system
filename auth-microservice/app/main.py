@@ -1,17 +1,32 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.middleware.cors import CORSMiddleware
 from jose import jwt, JWTError
 from pydantic import BaseModel
 from typing import List
 import httpx
 import os
 from dotenv import load_dotenv
+# from dependencies import get_current_user, User
 
 # Load environment variables
 load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI()
+
+
+
+# CORS Setup
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000","http://127.0.0.1:3000"],  # Your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
+)
+
 
 # Configuration from environment
 KEYCLOAK_URL = os.getenv("KEYCLOAK_SERVER_URL")
@@ -139,3 +154,11 @@ async def student_route(user: User = Depends(get_current_user)):
             detail="Student access required"
         )
     return {"message": f"Welcome student {user.username}"}
+
+
+@app.get("/users/me", response_model=User)
+async def read_users_me(current_user: User = Depends(get_current_user)):
+    """
+    Returns the currently authenticated user's information.
+    """
+    return current_user
