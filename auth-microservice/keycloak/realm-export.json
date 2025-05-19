@@ -1,0 +1,95 @@
+{
+  "realm": "ent_est-realm",
+  "enabled": true,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      {
+        "name": "etudiant",
+        "description": "Student role"
+      },
+      {
+        "name": "enseignant",
+        "description": "Teacher role"
+      },
+      {
+        "name": "admin",
+        "description": "Administrator role"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "student1",
+      "enabled": true,
+      "email": "student1@ent-est.tn",
+      "firstName": "Student",
+      "lastName": "One",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "student123"
+        }
+      ],
+      "realmRoles": ["etudiant"],
+      "clientRoles": {
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "teacher1",
+      "enabled": true,
+      "email": "teacher1@ent-est.tn",
+      "firstName": "Teacher",
+      "lastName": "One",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "teacher123"
+        }
+      ],
+      "realmRoles": ["enseignant"],
+      "clientRoles": {
+        "account": ["view-profile"]
+      }
+    },
+    {
+      "username": "admin1",
+      "enabled": true,
+      "email": "admin1@ent-est.tn",
+      "firstName": "Admin",
+      "lastName": "One",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123"
+        }
+      ],
+      "realmRoles": ["admin"],
+      "clientRoles": {
+        "account": ["manage-account"]
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "ent_est-realm",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "gZA4j6vLFk6YQcWIme7KvThJBJCPCYwC",
+      "redirectUris": ["*"],
+      "webOrigins": ["*"],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      }
+    }
+  ]
+}
