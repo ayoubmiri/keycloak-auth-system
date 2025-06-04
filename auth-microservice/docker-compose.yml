@@ -1,26 +1,242 @@
-version: '3.8'
+# # # version: '3.8'
 
+# # # services:
+# # #   fastapi-app:
+# # #     build: ./app
+# # #     ports:
+# # #       - "8000:8000"
+# # #     environment:
+# # #       - FASTAPI_HOST=${FASTAPI_HOST}
+# # #       - FASTAPI_PORT=${FASTAPI_PORT}
+# # #       - FASTAPI_RELOAD=${FASTAPI_RELOAD}
+# # #       - KEYCLOAK_SERVER_URL=${KEYCLOAK_SERVER_URL}
+# # #       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+# # #       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+# # #       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+# # #       - JWKS_URL=${JWKS_URL}
+# # #     depends_on:
+# # #       - keycloak
+# # #     volumes:
+# # #       - ./app:/app
+
+# # #   keycloak:
+# # #     image: quay.io/keycloak/keycloak:latest
+# # #     environment:
+# # #       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
+# # #       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+# # #       - KC_DB=postgres
+# # #       - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
+# # #       - KC_DB_USERNAME=keycloak
+# # #       - KC_DB_PASSWORD=password
+# # #     ports:
+# # #       - "8080:8080"
+# # #     volumes:
+# # #       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+# # #     command: ["start-dev", "--import-realm"]
+# # #     depends_on:
+# # #       keycloak-db:
+# # #         condition: service_healthy
+
+# # #   keycloak-db:
+# # #     image: postgres:latest
+# # #     environment:
+# # #       POSTGRES_DB: keycloak
+# # #       POSTGRES_USER: keycloak
+# # #       POSTGRES_PASSWORD: password
+# # #     healthcheck:
+# # #       test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+# # #       interval: 10s
+# # #       timeout: 5s
+# # #       retries: 3
+# # #     volumes:
+# # #       - postgres_data:/var/lib/postgresql/data
+
+      
+# # # networks:
+# # #   est-network:
+# # #     external: true
+
+# # # volumes:
+# # #   postgres_data:
+
+
+
+
+
+
+
+
+# #   # last yml file
+# # version: '3.8'
+# # services:
+# #   fastapi-app:
+# #     build: ./app
+# #     ports:
+# #       - "8000:8000"
+# #     environment:
+# #       - FASTAPI_HOST=${FASTAPI_HOST}
+# #       - FASTAPI_PORT=${FASTAPI_PORT}
+# #       - FASTAPI_RELOAD=${FASTAPI_RELOAD}
+# #       - KEYCLOAK_SERVER_URL=${KEYCLOAK_URL}
+# #       - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+# #       - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+# #       - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+# #       - JWKS_URL=${JWKS_URL}
+# #       # - AUTH_SERVICE_URL=${AUTH_SERVICE_URL}
+# #     depends_on:
+# #       - keycloak
+# #     volumes:
+# #       - ./app:/app
+# #     networks:
+# #       - est-network
+# #   keycloak:
+# #     image: quay.io/keycloak/keycloak:latest
+# #     environment:
+# #       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USERNAME}
+# #       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+# #       - KCDB=postgres
+# #       - KCDB_URL=http://keycloak:5432/keycloak
+# #       - KCDB_USERNAME=keycloak
+# #       - KCDB_PASSWORD=password
+# #     ports:
+# #       - "8080:8080"
+# #     volumes:
+# #       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+# #     command: ["start-dev", "--import-realm"]
+# #     depends_on:
+# #       - keycloak
+# #     networks:
+# #       - est-network
+# #     healthcheck:
+# #       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+# #       interval: 30s
+# #       timeout: 10s
+# #       retries: 5
+# #   keycloak-db:
+# #     image: postgres:latest
+# #     environment:
+# #       - POSTGRES_DB=keycloak
+# #       - POSTGRES_USER=keycloak
+# #       - POSTGRES_PASSWORD=password
+# #     healthcheck:
+# #       test: ["CMD-SHELL", "--pg_isready -U keycloak -d keycloak"]
+# #       interval: 10s
+# #       timeout: 5s
+# #       retries: 3
+# #     volumes:
+# #       - postgres_data:/var/lib/postgresql/data
+# #     networks:
+# #       - est-network
+
+# # networks:
+# #   est-network:
+# #     external: true
+
+# # volumes:
+# #   postgres_data
+
+
+
+
+
+# version: '3.8'
+# services:
+#   fastapi-app:
+#     build:
+#       context: ./app
+#     container_name: auth-service
+#     ports:
+#       - "8000:8000"
+#     env_file:
+#       - .env
+#     depends_on:
+#       - keycloak
+#     volumes:
+#       - ./app:/app
+#     networks:
+#       - est-network
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 3
+
+#   keycloak:
+#     image: quay.io/keycloak/keycloak:latest
+#     container_name: keycloak
+#     environment:
+#       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
+#       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+#       - KC_DB=postgres
+#       - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
+#       - KC_DB_USERNAME=keycloak
+#       - KC_DB_PASSWORD=password
+#     ports:
+#       - "8080:8080"
+#     volumes:
+#       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+#     command: ["start-dev", "--import-realm"]
+#     depends_on:
+#       keycloak-db:
+#         condition: service_healthy
+#     networks:
+#       - est-network
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+#       interval: 30s
+#       timeout: 10s
+#       retries: 5
+
+#   keycloak-db:
+#     image: postgres:latest
+#     container_name: keycloak-db
+#     environment:
+#       - POSTGRES_DB=keycloak
+#       - POSTGRES_USER=keycloak
+#       - POSTGRES_PASSWORD=password
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 3
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     networks:
+#       - est-network
+
+# networks:
+#   est-network:
+#     external: true
+
+# volumes:
+#   postgres_data:
+
+
+version: '3.8'
 services:
-  fastapi-app:
-    build: ./app
+  auth-service:
+    build:
+      context: ./app
+    container_name: auth-service
     ports:
       - "8000:8000"
-    environment:
-      - FASTAPI_HOST=${FASTAPI_HOST}
-      - FASTAPI_PORT=${FASTAPI_PORT}
-      - FASTAPI_RELOAD=${FASTAPI_RELOAD}
-      - KEYCLOAK_SERVER_URL=${KEYCLOAK_SERVER_URL}
-      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
-      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
-      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
-      - JWKS_URL=${JWKS_URL}
+    env_file:
+      - .env
     depends_on:
       - keycloak
     volumes:
       - ./app:/app
+    networks:
+      - est-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
     environment:
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
@@ -36,13 +252,21 @@ services:
     depends_on:
       keycloak-db:
         condition: service_healthy
+    networks:
+      - est-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   keycloak-db:
     image: postgres:latest
+    container_name: keycloak-db
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
       interval: 10s
@@ -50,6 +274,12 @@ services:
       retries: 3
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - est-network
+
+networks:
+  est-network:
+    external: true
 
 volumes:
   postgres_data:

@@ -1,0 +1,471 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+    "name": "Ent-Est API Tests - Dynamic Tokens",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Tests for auth microservice and CRUD app with dynamic RS256 JWT tokens and admin-only access."
+  },
+  "item": [
+    {
+      "name": "1. Get Access Token (Admin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('admin_token', jsonData.access_token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "client_id",
+              "value": "ent_est-client"
+            },
+            {
+              "key": "client_secret",
+              "value": "gZA4j6vLFk6YQcWIme7KvThJBJCPCYwC"
+            },
+            {
+              "key": "username",
+              "value": "admin1@ent-est.tn"
+            },
+            {
+              "key": "password",
+              "value": "your-admin-password"
+            },
+            {
+              "key": "grant_type",
+              "value": "password"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/realms/ent_est-realm/protocol/openid-connect/token",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["realms", "ent_est-realm", "protocol", "openid-connect", "token"]
+        },
+        "description": "Fetch admin token and save as admin_token."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Get Access Token (Non-Admin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('non_admin_token', jsonData.access_token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "client_id",
+              "value": "ent_est-client"
+            },
+            {
+              "key": "client_secret",
+              "value": "gZA4j6vLFk6YQcWIme7KvThJBJCPCYwC"
+            },
+            {
+              "key": "username",
+              "value": "teacher1@ent-est.tn"
+            },
+            {
+              "key": "password",
+              "value": "your-teacher-password"
+            },
+            {
+              "key": "grant_type",
+              "value": "password"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/realms/ent_est-realm/protocol/openid-connect/token",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["realms", "ent_est-realm", "protocol", "openid-connect", "token"]
+        },
+        "description": "Fetch non-admin (teacher) token and save as non_admin_token."
+      },
+      "response": []
+    },
+    {
+      "name": "Auth Microservice",
+      "item": [
+        {
+          "name": "Verify Token - Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/verify-token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["verify-token"]
+            },
+            "description": "Verify admin token (expect 200)."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Token - Non-Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{non_admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/verify-token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["verify-token"]
+            },
+            "description": "Verify non-admin token (expect 200)."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Token - Invalid",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid.token.here",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/verify-token",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["verify-token"]
+            },
+            "description": "Test invalid token (expect 401)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CRUD App - Students",
+      "item": [
+        {
+          "name": "Create Student - Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\": \"123e4567-e89b-12d3-a456-426614174000\", \"name\": \"John Doe\", \"email\": \"john.doe@ent-est.tn\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", ""]
+            },
+            "description": "Create student as admin (expect 201)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Student - Non-Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{non_admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\": \"223e4567-e89b-12d3-a456-426614174000\", \"name\": \"Jane Doe\", \"email\": \"jane.doe@ent-est.tn\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", ""]
+            },
+            "description": "Create student as non-admin (expect 403)."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Student - Invalid Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid.token.here",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"id\": \"323e4567-e89b-12d3-a456-426614174000\", \"name\": \"Invalid User\", \"email\": \"invalid@ent-est.tn\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", ""]
+            },
+            "description": "Create student with invalid token (expect 401)."
+          },
+          "response": []
+        },
+        {
+          "name": "Read Student by ID - Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/123e4567-e89b-12d3-a456-426614174000",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", "123e4567-e89b-12d3-a456-426614174000"]
+            },
+            "description": "Read student by ID as admin (expect 200 or 404)."
+          },
+          "response": []
+        },
+        {
+          "name": "Read All Students - Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", ""]
+            },
+            "description": "Read all students as admin (expect 200)."
+          },
+          "response": []
+        },
+        {
+          "name": "Read All Students - Non-Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{non_admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", ""]
+            },
+            "description": "Read all students as non-admin (expect 403)."
+          },
+          "response": []
+        },
+        {
+          "name": "Read All Students - Invalid Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid.token.here",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", ""]
+            },
+            "description": "Read all students with invalid token (expect 401)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Student - Admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"John Doe Updated\", \"email\": \"john.doe@ent-est.tn\"}"
+            },
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/123e4567-e89b-12d3-a456-426614174000",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", "123e4567-e89b-12d3-a456-426614174000"]
+            },
+            "description": "Update student as admin (expect 200 or 404)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Student - Admin",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8001/api/v1/students/123e4567-e89b-12d3-a456-426614174000",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8001",
+              "path": ["api", "v1", "students", "123e4567-e89b-12d3-a456-426614174000"]
+            },
+            "description": "Delete student as admin (expect 200 or 404)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT token for admin user"
+    },
+    {
+      "key": "non_admin_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT token for non-admin user (e.g., teacher)"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Ensure tokens are set before running tests",
+          "if (!pm.collectionVariables.get('admin_token')) {",
+          "    console.log('Admin token not set. Run \"Get Access Token (Admin)\" first.');",
+          "}",
+          "if (!pm.collectionVariables.get('non_admin_token')) {",
+          "    console.log('Non-admin token not set. Run \"Get Access Token (Non-Admin)\" first.');",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}
