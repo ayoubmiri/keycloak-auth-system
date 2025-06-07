@@ -4,18 +4,12 @@
   "sslRequired": "external",
   "roles": {
     "realm": [
-      {
-        "name": "etudiant",
-        "description": "Student role"
-      },
-      {
-        "name": "enseignant",
-        "description": "Teacher role"
-      },
-      {
-        "name": "admin",
-        "description": "Administrator role"
-      }
+      { "name": "etudiant", "description": "Student role" },
+      { "name": "enseignant", "description": "Teacher role" },
+      { "name": "admin", "description": "Administrator role" },
+      { "name": "manage-users", "description": "Manage users" },
+      { "name": "view-users", "description": "View users" },
+      { "name": "query-users", "description": "Query users" }
     ]
   },
   "users": [
@@ -25,16 +19,9 @@
       "email": "student1@ent-est.tn",
       "firstName": "Student",
       "lastName": "One",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "student123"
-        }
-      ],
+      "credentials": [{ "type": "password", "value": "student123" }],
       "realmRoles": ["etudiant"],
-      "clientRoles": {
-        "account": ["view-profile"]
-      }
+      "clientRoles": { "account": ["view-profile"] }
     },
     {
       "username": "teacher1",
@@ -42,16 +29,9 @@
       "email": "teacher1@ent-est.tn",
       "firstName": "Teacher",
       "lastName": "One",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "teacher123"
-        }
-      ],
+      "credentials": [{ "type": "password", "value": "teacher123" }],
       "realmRoles": ["enseignant"],
-      "clientRoles": {
-        "account": ["view-profile"]
-      }
+      "clientRoles": { "account": ["view-profile"] }
     },
     {
       "username": "admin1",
@@ -59,16 +39,15 @@
       "email": "admin1@ent-est.tn",
       "firstName": "Admin",
       "lastName": "One",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "admin123"
-        }
-      ],
+      "credentials": [{ "type": "password", "value": "admin123" }],
       "realmRoles": ["admin"],
-      "clientRoles": {
-        "account": ["manage-account"]
-      }
+      "clientRoles": { "account": ["manage-account"] }
+    },
+    {
+      "username": "service-account-admin-cli",
+      "enabled": true,
+      "serviceAccountClientId": "admin-cli",
+      "realmRoles": ["manage-users", "view-users", "query-users"]
     }
   ],
   "clients": [
@@ -89,7 +68,34 @@
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.session.required": "true",
         "backchannel.logout.revoke.offline.tokens": "false"
-      }
+      },
+      "protocolMappers": [
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "admin-cli",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "DPnQSiuuqDu25b8qQkggoOMrKCFZDz6k",
+      "publicClient": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "protocol": "openid-connect",
+      "attributes": {}
     }
   ]
 }

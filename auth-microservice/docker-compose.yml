@@ -238,12 +238,15 @@ services:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
     environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
       - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
       - KC_DB=postgres
       - KC_DB_URL=jdbc:postgresql://keycloak-db:5432/keycloak
       - KC_DB_USERNAME=keycloak
       - KC_DB_PASSWORD=password
+
     ports:
       - "8080:8080"
     volumes:
