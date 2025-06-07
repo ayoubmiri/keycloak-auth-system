@@ -41,7 +41,10 @@
       "lastName": "One",
       "credentials": [{ "type": "password", "value": "admin123" }],
       "realmRoles": ["admin"],
-      "clientRoles": { "account": ["manage-account"] }
+      "clientRoles": {
+        "account": ["manage-account"],
+        "realm-management": ["realm-admin"]
+      }
     },
     {
       "username": "service-account-admin-cli",
