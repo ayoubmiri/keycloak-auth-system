@@ -246,21 +246,53 @@ load_dotenv()
 app = FastAPI()
 
 # CORS Setup
+CORS_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:8001"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"]
 )
 
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=[
+#         "http://localhost:3000",
+#         "http://localhost:3001",
+#         "http://localhost:8000",  # Add Keycloak callback
+#         "http://localhost:8001",
+
+#         "http://127.0.0.1:8000",  # Add Keycloak callback
+#         "http://127.0.0.1:8001", # Ensure FastAPI itself # Ensure FastAPI itself
+#         "http://127.0.0.1:3000",
+#         "http://127.0.0.1:3001",
+
+#         "http://192.168.1.30:3000",
+#         "http://192.168.1.30:3001",
+#         "http://192.168.1.30:8000",  # Add Keycloak callback
+#         "http://192.168.1.30:8001" 
+#         ],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+#     expose_headers=["*"]
+# )
+
 # Configuration from environment
-KEYCLOAK_URL = os.getenv("KEYCLOAK_SERVER_URL")
-REALM = os.getenv("KEYCLOAK_REALM")
-CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
-JWKS_URL = os.getenv("JWKS_URL")
+# KEYCLOAK_URL = os.getenv("KEYCLOAK_SERVER_URL")
+# REALM = os.getenv("KEYCLOAK_REALM")
+# CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID")
+# JWKS_URL = os.getenv("JWKS_URL")
+# ALGORITHM = os.getenv("ALGORITHM", "RS256")
+KEYCLOAK_URL = os.getenv("KEYCLOAK_SERVER_URL", "http://localhost:8080")
+REALM = os.getenv("KEYCLOAK_REALM", "est-realm")
+CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "est-client")
+JWKS_URL = os.getenv("JWKS_URL", f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/certs")
 ALGORITHM = os.getenv("ALGORITHM", "RS256")
+
 
 # Validate essential configs
 for var in ["KEYCLOAK_SERVER_URL", "KEYCLOAK_REALM", "KEYCLOAK_CLIENT_ID", "JWKS_URL"]:
@@ -394,6 +426,7 @@ async def verify_token(request: Request):
         )
     except (jwt.JWTError, httpx.HTTPError) as e:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Invalid token: {str(e)}")
+
 
 # Root endpoint
 @app.get("/")
